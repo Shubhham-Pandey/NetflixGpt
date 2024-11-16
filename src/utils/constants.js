@@ -8,7 +8,7 @@ export const TMDB_API_OPTIONS = {
     method: 'GET',
     headers: {
       accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwNDFlNzdjMTUzNTFkOTYyZWRiNzU1N2E4YjI2MjI0MiIsIm5iZiI6MTczMTc0MjUzMy40NjEzMTQ3LCJzdWIiOiI2NzM4NDhkMzYyNGE4NWI4ODk5ZTk4ZWYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.GjYnORmKZbWe74roSvxkVROx1d79rFFufJyo8ZxyI1c'
+      Authorization: 'Bearer YOUR KEY'
     }
 };  
 
