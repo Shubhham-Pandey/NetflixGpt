@@ -4,13 +4,11 @@ import { checkValidateFields } from '../utils/validate';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { addUser } from '../utils/userSlice';
 import { USER_AVATAR } from '../utils/constants';
 
 const Login = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState({});
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [firebaseErrorMessage, setFirebaseErrorMessage] = useState("");
@@ -30,50 +28,43 @@ const Login = () => {
   
     // Check if the message object is empty (i.e., no validation errors)
     if (Object.keys(message).length === 0) {
-      console.log("inside api call ");
       
       // Make the API call based on the form type (sign-up or sign-in)
       if (!isSignInForm) {
+        console.log("sign in called")
         // Sign Up Logic
         createUserWithEmailAndPassword(
           auth,
           inputEmailRef.current.value, 
           inputPasswordRef.current.value
-        )
-          .then((userCredential) => {
-            const user = userCredential.user;
-            updateProfile(user, {
-              displayName: inputFullNameRef.current.value,
-              photoURL: USER_AVATAR,
+        ).then((userCredential) => {
+          const user = userCredential.user;
+          updateProfile(user, {
+            displayName: inputFullNameRef.current.value,
+            photoURL: USER_AVATAR,
+          }).then(() => {
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
             })
-              .then(() => {
-                const { uid, email, displayName, photoURL } = auth.currentUser;
-                dispatch(
-                  addUser({
-                    uid: uid,
-                    email: email,
-                    displayName: displayName,
-                    photoURL: photoURL,
-                  })
-                );
-                navigate('/browse');
-              })
-              .catch((error) => {
-                setErrorMessage(error.message);
-              });
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            setErrorMessage(errorCode + "-" + errorMessage);
-          });
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
+        }).catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
       }else {
-        console.log("inside api call ");
         signInWithEmailAndPassword(auth, inputEmailRef.current.value, inputPasswordRef.current.value)
           .then((userCredential) => {
             const user = userCredential.user;
-            console.log("User ", user);
-            navigate('/browse');
           })
           .catch((error) => {
             setFirebaseErrorMessage(`${error?.code} ${error?.message}`);
